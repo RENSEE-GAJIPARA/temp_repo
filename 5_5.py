@@ -107,31 +107,33 @@ for i in models:
 '''
 
 #Q4
-    
+'''
 class Account(ABC):
     @abstractmethod
-    def deposit(self):
+    def deposit(self, amount):
         pass
 
     @abstractmethod
-    def withdraw(self):
+    def withdraw(self, amount):
         pass
 
-class BankAccount:
+class BankAccount(Account):
     def __init__(self, account_number, balance):
-        __account_number = account_number
-        __balance = balance
+        self.__account_number = account_number
+        self.__balance = balance
 
     def deposit(self, amount):
         if amount > 0:
             self.__balance += amount
+            print(f"Deposited amount is: {amount}")
             print(f"New balance is : {self.__balance}")
         else: 
             print("Invalid amount...")
 
-    def widthraw(self, amount):
+    def withdraw(self, amount):
         if amount < self.__balance:
             self.__balance -= amount
+            print(f"Withdrawn amount is: {amount}")
             print(f"Remaing balance is : {self.__balance}")
         else:
             print("Please check your balance...")
@@ -139,35 +141,46 @@ class BankAccount:
     def get_balance(self):
         return self.__balance
     
-class SavingAccount(BankAccount, Account):
-    def __init__(self, account_number, balance, intrest_rate):
+class SavingAccount(BankAccount):
+    def __init__(self, account_number, balance, interest_rate):
         super().__init__(account_number, balance)
-        self.intrest_rate = intrest_rate
+        self.interest_rate = interest_rate
 
     def add_intrest(self):
-        intrest = self.get_balance() * self.intrest_rate / 100
-        self.deposit(intrest)
-        print(f"{intrest} intrest added.")
+        interest = self.get_balance() * self.interest_rate / 100
+        self.deposit(interest)
+        print(f"{interest} intrest added.")
 
-class CurrentAccount(BankAccount, Account):
+class CurrentAccount(BankAccount):
     def __init__(self, account_number, balance, limit):
         super().__init__(account_number, balance)
         self.limit = limit
 
-    def widthraw(self, amount):
-        if amount <= self.get_balance():
-            super().widthraw(amount)
+    def withdraw(self, amount):
+        if amount <= self.get_balance() + self.limit:
+            print(f"Withdran: {amount}")
+            new_balance = self.get_balance() - amount
+            self._BankAccount__balance = new_balance
+
         else:
-            shortfall = amount - self.get_balance()
-            super().withdraw(self.get_balance()) 
-            print(f"Overdraft used: ${shortfall}.")
-            print("Transaction Successful.")
+            print("limit exceeded.")
+
 
 print(f"{"="*20} Bnak Account Management System {"="*20}")
 
-account = []
+account_number = int(input("Enter your Account Number: "))
+balance = float(input("Enter your balance: "))
+interest_rate = float(input("Enter interest Rate: "))
+deposite_amount = float(input("Enter your how many amount you want to deposite: "))
+withdraw_amount = float(input("Enter your how many amount you want to withdraw: "))
+limit = float(input("Enter overdraft limit: "))
 
-for i in account:
-    i.deposit()
-    i.withdraw()
-    i.get_balance()
+s = SavingAccount(account_number, balance, interest_rate)
+s.deposit(deposite_amount)
+s.add_intrest()
+print(f"Saving balance is: {s.get_balance()}")
+
+c = CurrentAccount(account_number, balance, limit)
+c.withdraw(withdraw_amount)
+print(f"Current balance: {c.get_balance()}")
+'''   
